@@ -52,8 +52,24 @@ public class BibleQuoteApp extends Application {
 
 		getCoreContext().Init();
 
+
+		// Bug: WebView, java.util.logging and Debug Mode
+		// https://community.oracle.com/thread/2423650
+		// solution:
+		// http://stackoverflow.com/questions/18388512/why-is-webview-content-fading-out-disappearing
+		// and:
+		// https://community.oracle.com/message/11154629
+		// and:
+		// http://javafx-jira.kenai.com/browse/RT-23846
+		// Должно быть после инициализации логера
+		java.util.logging.Logger.getLogger(
+				com.sun.webpane.sg.prism.WCGraphicsPrismContext.class.getName())
+				.setLevel(java.util.logging.Level.OFF);
+
+
 		primaryStage.setTitle("BibleQuoteJavaFX");
-		Pane myPane = (Pane) FXMLLoader.load(getClass().getResource("ui/res/layout/SplashActivity.fxml"));
+		Pane myPane = (Pane) FXMLLoader.load(getClass()
+				.getResource("res/layout/ReaderActivity.fxml"));
 		Scene myScene = new Scene(myPane, 400, 500);
 		primaryStage.setScene(myScene);
 		primaryStage.show();
