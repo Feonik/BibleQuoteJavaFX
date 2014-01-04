@@ -2,6 +2,8 @@ package com.BibleQuote.BibleQuoteJavaFX;
 
 import com.BibleQuote.bqtj.jvm.CoreContextJvm;
 import com.BibleQuote.bqtj.CoreContext;
+import com.BibleQuote.bqtj.jvm.utils.LogSysJvm;
+import com.BibleQuote.bqtj.utils.Log;
 import com.BibleQuote.bqtj.utils.LogTxt;
 
 import javafx.application.Application;
@@ -43,6 +45,10 @@ public class BibleQuoteApp extends Application {
 	// NOTE: This method is called on the JavaFX Application Thread.
 	@Override
 	public void start(Stage primaryStage) throws Exception {
+
+		Log.Init(LogSysJvm.getLogSysJvm());
+
+		LogTxt.Init(getCoreContext());
 
 		getCoreContext().Init();
 
