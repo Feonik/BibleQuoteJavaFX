@@ -5,7 +5,9 @@ import com.BibleQuote.bqtj.entity.BibleReference;
 import com.BibleQuote.bqtj.exceptions.BookNotFoundException;
 import com.BibleQuote.bqtj.exceptions.OpenModuleException;
 import com.BibleQuote.bqtj.managers.Librarian;
+import com.BibleQuote.bqtj.utils.LogTxt;
 import com.BibleQuote.bqtj.utils.PreferenceHelper;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.SplitPane;
@@ -15,10 +17,12 @@ import javafx.scene.web.WebView;
 
 public class ReaderActivityController implements Initializable {
 
+	private static final String TAG = "ReaderActivityController";
+
 	@FXML
 	private Pane leftPart;
 	@FXML
-	private WebView webView;
+	private WebView ReaderWebView;
 
 	private Librarian myLibrarian;
 	private String chapterInHTML = "";
@@ -28,38 +32,40 @@ public class ReaderActivityController implements Initializable {
 	@Override
 	public void initialize(java.net.URL location, java.util.ResourceBundle resources) {
 		SplitPane.setResizableWithParent(leftPart, Boolean.FALSE);
-	}
-
-
-	@FXML
-	protected void handleSubmitButtonAction(MouseEvent event) {
 
 		myLibrarian = CoreContext.getCoreContext().getLibrarian();
 
-//		BibleReference osisLink = new BibleReference(PreferenceHelper.restoreStateString("last_read"));
-
-		BibleReference osisLink = new BibleReference(
-//				"ds:fs;id:/mnt/sdcard/BibleQuote/modules/Bible_Rus_RstStrong_2012_fix/bibleqt.ini;m:RST+FIX;b:Ruth;ch:1;v:1"
-				"ds:fs;id:E:\\Dev\\projects\\Java\\BibleQuoteJava\\BibleQuoteJavaFX\\out\\production\\Data\\modules\\Bible_Deu_SCH2000NEU_fix\\bibleqt.ini;m:RST+FIX;b:Ruth;ch:1;v:1"
-//				"E:\\Dev\\projects\\Java\\BibleQuoteJava\\BibleQuoteJavaFX\\out\\production\\Data\\modules\\Bible_Deu_SCH2000NEU_fix\\bibleqt.ini"
-		);
+		BibleReference osisLink = new BibleReference(PreferenceHelper.restoreStateString("last_read"));
 
 		if (!myLibrarian.isOSISLinkValid(osisLink)) {
 //			onChooseChapterClick();
+
+			osisLink = new BibleReference(
+//					"ds:fs;id:/mnt/sdcard/BibleQuote/modules/Bible_Rus_RstStrong_2012_fix/bibleqt.ini;m:RST+FIX;b:Ruth;ch:1;v:1"
+					"ds:fs;id:E:\\Dev\\projects\\Java\\BibleQuoteJava" +
+							"\\BibleQuoteJavaFX\\out\\production\\Data\\modules" +
+							"\\Bible_Deu_SCH2000NEU_fix\\bibleqt.ini;" +
+							"m:RST+FIX;b:Ps;ch:116;v:1"
+//					"E:\\Dev\\projects\\Java\\BibleQuoteJava\\BibleQuoteJavaFX\\out\\production\\Data\\modules\\Bible_Deu_SCH2000NEU_fix\\bibleqt.ini"
+			);
+
+			openChapterFromLink(osisLink);
+
 		} else {
 			openChapterFromLink(osisLink);
 		}
 
-		chapterInHTML = myLibrarian.getParChapterHTMLView();
-		setTextInWebView();
 
-//		webView.getEngine().load("http://jesuschrist.ru/bible/?b=19&c=118");
+//		ReaderWebView.getEngine().load("http://jesuschrist.ru/bible/?b=19&c=118");
 	}
+
 
 	private void openChapterFromLink(BibleReference osisLink) {
 
 		try {
 			myLibrarian.openChapter(osisLink, false);
+			chapterInHTML = myLibrarian.getParChapterHTMLView();
+			setTextInWebView();
 		} catch (BookNotFoundException e) {
 			e.printStackTrace();
 		} catch (OpenModuleException e) {
@@ -98,8 +104,44 @@ public class ReaderActivityController implements Initializable {
 //		loadDataWithBaseURL("file://" + baseUrl, html.toString(), "text/html", "UTF-8", "about:config");
 //		jsInterface.clearSelectedVerse();
 
-		webView.getEngine().loadContent(html.toString());
+		ReaderWebView.getEngine().loadContent(html.toString());
+	}
 
+	@FXML
+	protected void onMouseClicked(MouseEvent event) {
+
+	}
+
+	@FXML
+	private void onClickChapterPrev(Event event) {
+		prevChapter();
+	}
+
+	@FXML
+	private void onClickChapterNext(Event event) {
+		nextChapter();
+	}
+
+	public void prevChapter() {
+		try {
+			myLibrarian.prevChapter();
+		} catch (OpenModuleException e) {
+			LogTxt.e(TAG, "prevChapter()", e);
+		}
+		viewCurrentChapter();
+	}
+
+	public void nextChapter() {
+		try {
+			myLibrarian.nextChapter();
+		} catch (OpenModuleException e) {
+			LogTxt.e(TAG, "nextChapter()", e);
+		}
+		viewCurrentChapter();
+	}
+
+	private void viewCurrentChapter() {
+		openChapterFromLink(myLibrarian.getCurrentOSISLink());
 	}
 
 }

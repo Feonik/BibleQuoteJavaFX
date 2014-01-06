@@ -62,9 +62,12 @@ public class BibleQuoteApp extends Application {
 		// and:
 		// http://javafx-jira.kenai.com/browse/RT-23846
 		// Должно быть после инициализации логера
-		java.util.logging.Logger.getLogger(
-				com.sun.webpane.sg.prism.WCGraphicsPrismContext.class.getName())
-				.setLevel(java.util.logging.Level.OFF);
+//		java.util.logging.Logger.getLogger(
+//				com.sun.webpane.sg.prism.WCGraphicsPrismContext.class.getName())
+//				.setLevel(java.util.logging.Level.OFF);
+		// пока отключил, так как внес изменение в
+		// hsqldb-2.3.1\src-java5\org\hsqldb\resources\jdklogging-default.properties
+		// изменив уровень логирования в hsqldb на INFO
 
 
 		primaryStage.setTitle("BibleQuoteJavaFX");
